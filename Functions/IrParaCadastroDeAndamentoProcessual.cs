@@ -2,83 +2,112 @@
 
 namespace GCScript_Automate.Functions;
 
-public static class IrParaCadastroDeAndamentoProcessual
+interface IIrParaCadastroDeAndamentoProcessual
+{
+    void Run(int attempts = 0);
+}
+
+public class IrParaCadastroDeAndamentoProcessual : IIrParaCadastroDeAndamentoProcessual
 {
     #region WINDOW
-    private static string win1Name = "CP-Pro Mais";
-    private static string win1Class = "TfrmCProc";
-    private static string win1Process = "CProc.exe";
+    private string winName = "CP-Pro Mais";
+    private string winClass = "TfrmCProc";
+    private string winProcess = "CProc.exe";
 
-    private static string? win2Name = null;
-    private static string win2Class = "#32768";
-    private static string win2Process = "CProc.exe";
+    private string? win2Name = null;
+    private string win2Class = "#32768";
+    private string win2Process = "CProc.exe";
     #endregion
 
     #region ELEMENTS
-    private static wnd win1;
-    private static wnd win2;
-    private static elm? btnIncluir;
-    private static elm? btnAcompanhamentos;
-    private static elm? btnIncluirAndamento;
+    private wnd win;
+    private wnd win2;
+    private elm? btnIncluir;
+    private elm? btnAcompanhamentos;
+    private elm? btnIncluirAndamento;
+
+
     #endregion
 
-    public static GCSResponse Start()
+    public void Start()
     {
 
         try
         {
-            Settings.NextStep = false;
-            for (int i = 0; i < 10; i++)
-            {
-                if (i > 0) { wait.s(Settings.LA_PositiveWait10); }
-
-                // WINDOW 1
-                win1 = wnd.find(Settings.LA_WinNegativeWait, win1Name, win1Class, win1Process);
-                if (win1.Is0) { Settings.LastError = $"A janela {win1Name} não foi encontrada!"; continue; }
-
-                // BUTTON INCLUIR
-                btnIncluir = win1.Elm["WINDOW", prop: "class=TfrmAcompanhamento"]["BUTTON", "Incluir"].Find(Settings.LA_NegativeWait10);
-                if (btnIncluir == null)
-                {
-                    Settings.LastError = $"O botão Incluir não foi encontrado!";
-
-                    // BUTTON ACOMPANHAMENTOS
-                    btnAcompanhamentos = win1.Elm["CLIENT", win1.Name, navig: "la fi3 ch2 fi la fi3 ch2 fi la fi2"]["CLIENT", "Acompanhamentos"].Find(Settings.LA_NegativeWait10);
-                    if (btnAcompanhamentos == null) { return new() { Success = false, Message = $"O botão Acompanhamentos não foi encontrado!", ErrorCode = ListOfErrorCodes.E134695 }; }
-                    btnAcompanhamentos.MouseClick();
-                    continue;
-                }
-
-                btnIncluir.MouseClick();
-
-                // WINDOW 2
-                win2 = wnd.find(Settings.LA_NegativeWait05, win2Name, win2Class, win2Process);
-                if (win2.Is0)
-                {
-                    Settings.LastError = $"A janela do botão Incluir Andamento não foi encontrada!";
-                    continue;
-                }
-                wait.s(Settings.LA_PositiveWait03);
-
-                // BUTTON INCLUIR ANDAMENTO...
-                btnIncluirAndamento = win2.Elm["MENUITEM", "Incluir Andamento..."].Find(Settings.LA_NegativeWait10);
-                if (btnIncluirAndamento == null)
-                {
-                    Settings.LastError = $"O botão Incluir Andamento não foi encontrado!";
-                    continue;
-                }
-
-                btnIncluirAndamento.MouseClick();
-
-                Settings.NextStep = true; break;
-            }
-            if (!Settings.NextStep) { return new() { Success = false, Message = Settings.LastError, ErrorCode = ListOfErrorCodes.E134695 }; }
-
-            return new() { Success = true };
+            Run();
+            SendResponse.Send(new() { Success = true });
         }
         catch (Exception error)
         {
-            return new() { Success = false, Message = error.Message, ErrorCode = ListOfErrorCodes.E138434 };
+            SendResponse.Send(new() { Success = false, Message = error.Message, ErrorCode = ListOfErrorCodes.E138434 });
         }
+    }
+
+    public void Run(int attempts = 0)
+    {
+        if (attempts == 0) { attempts = Settings.DefaultMaxAttempts; }
+
+        Settings.NextStep = false;
+        for (int i = 0; i < attempts; i++)
+        {
+            if (i > 0) { wait.s(Settings.LA_PositiveWait10); }
+
+            // WINDOW 1
+            win = wnd.find(Settings.LA_WinNegativeWait, winName, winClass, winProcess);
+            if (win.Is0) { Settings.LastError = $"A janela {winName} não foi encontrada!"; continue; }
+
+            // BUTTON INCLUIR
+            btnIncluir = win.Elm["WINDOW", prop: "class=TfrmAcompanhamento"]["BUTTON", "Incluir"].Find(Settings.LA_NegativeWait10);
+            if (btnIncluir == null)
+            {
+                Settings.LastError = $"O botão Incluir não foi encontrado!";
+
+                // BUTTON ACOMPANHAMENTOS
+                btnAcompanhamentos = win.Elm["CLIENT", win.Name, navig: "la fi3 ch2 fi la fi3 ch2 fi la fi2"]["CLIENT", "Acompanhamentos"].Find(Settings.LA_NegativeWait10);
+                if (btnAcompanhamentos == null)
+                {
+                    SendResponse.Send(new() { Success = false, Message = $"O botão Acompanhamentos não foi encontrado!", ErrorCode = ListOfErrorCodes.E134695 });
+                }
+
+
+                FunctionsLibreAutomate.ClickOnElement(btnAcompanhamentos);
+                //btnAcompanhamentos.WaitFor(Settings.LA_NegativeWait10, x => x.IsInvisible == false);
+                //if (!btnAcompanhamentos.IsInvisible) { try { btnAcompanhamentos.MouseClick(); } catch (Exception) { } }
+
+                continue;
+            }
+
+            if (!FunctionsLibreAutomate.ClickOnElement(btnIncluir)) { continue; }
+
+            //btnIncluir.WaitFor(Settings.LA_NegativeWait10, x => x.IsInvisible == false);
+            //if (btnIncluir.IsInvisible) { continue; }
+            //try { btnIncluir.MouseClick(); } catch (Exception) { }
+
+            // WINDOW 2
+            win2 = wnd.find(Settings.LA_NegativeWait05, win2Name, win2Class, win2Process);
+            if (win2.Is0)
+            {
+                Settings.LastError = $"A janela do botão Incluir Andamento não foi encontrada!";
+                continue;
+            }
+            wait.s(Settings.LA_PositiveWait03);
+
+            // BUTTON INCLUIR ANDAMENTO...
+            btnIncluirAndamento = win2.Elm["MENUITEM", "Incluir Andamento..."].Find(Settings.LA_NegativeWait10);
+            if (btnIncluirAndamento == null)
+            {
+                Settings.LastError = $"O botão Incluir Andamento não foi encontrado!";
+                continue;
+            }
+
+            if (!FunctionsLibreAutomate.ClickOnElement(btnIncluirAndamento)) { continue; }
+
+            //btnIncluirAndamento.WaitFor(Settings.LA_NegativeWait10, x => x.IsInvisible == false);
+            //if (btnIncluirAndamento.IsInvisible) { continue; }
+            //try { btnIncluirAndamento.MouseClick(); } catch (Exception) { }
+
+            Settings.NextStep = true; break;
+        }
+        if (!Settings.NextStep) { SendResponse.Send(new() { Success = false, Message = Settings.LastError, ErrorCode = ListOfErrorCodes.E134695 }); }
     }
 }

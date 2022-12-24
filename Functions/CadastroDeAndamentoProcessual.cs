@@ -37,9 +37,9 @@ public class CadastroDeAndamentoProcessual : ICadastroDeAndamentoProcessual
     private string DescricaoModel = "";
     #endregion
 
-    #region OTHERS
-    private GCSResponse result;
-    #endregion
+    //#region OTHERS
+    //private GCSResponse result;
+    //#endregion
 
     public void Start(CadastroDeAndamentoProcessualModel model)
     {

@@ -82,7 +82,8 @@ internal static class Program
                 }
                 else if (function == "IrParaCadastroDeAndamentoProcessual")
                 {
-                    WriteResponse(IrParaCadastroDeAndamentoProcessual.Start());
+                    IrParaCadastroDeAndamentoProcessual task = new();
+                    task.Start();
                     return;
                 }
                 else if (function == "CadastroDeAndamentoProcessual")
@@ -99,10 +100,9 @@ internal static class Program
                 }
                 else if (function == "IncluindoNovoCompromisso")
                 {
-                    Clipboard.SetText(requestJson);
                     var model = JsonSerializer.Deserialize<IncluindoNovoCompromissoModel>(requestJson);
-
-                    WriteResponse(IncluindoNovoCompromisso.Start(model));
+                    IncluindoNovoCompromisso task = new();
+                    task.Start(model);
                     return;
                 }
                 else
@@ -115,7 +115,6 @@ internal static class Program
             {
                 //Tests.Test();
 
-
                 #region Login
                 //LoginModel model = new() { Username = "DTI", Password = "Fix@2021" };
                 //Login task = new();
@@ -123,9 +122,14 @@ internal static class Program
                 #endregion
 
                 #region PesquisarProcesso
-                var model = new PesquisarProcessoModel() { PalavraChave = "5000191-81.2022.8.08.0036" };
-                PesquisarProcesso task = new();
-                task.Start(model);
+                //var model = new PesquisarProcessoModel() { PalavraChave = "5000191-81.2022.8.08.0036" };
+                //PesquisarProcesso task = new();
+                //task.Start(model);
+                #endregion
+
+                #region IrParaCadastroDeAndamentoProcessual
+                IrParaCadastroDeAndamentoProcessual task = new();
+                task.Start();
                 #endregion
 
                 #region CadastroDeAndamentoProcessual
@@ -137,13 +141,8 @@ internal static class Program
                 //    Descricao = "Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste"
 
                 //};
-                //WriteResponse(CadastroDeAndamentoProcessual.Start(model));
-                //return;
-                #endregion
-
-                #region Login
-                //WriteResponse(IrParaIncluindoNovoCompromisso.Start());
-                //return;
+                //CadastroDeAndamentoProcessual task = new();
+                //task.Start(model);
                 #endregion
 
                 #region IncluindoNovoCompromisso
@@ -155,11 +154,12 @@ internal static class Program
                 //    Descricao = "Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste",
                 //    DiaInteiro = true,
                 //};
-                //WriteResponse(IncluindoNovoCompromisso.Start(model));
-                //return;
+
+                //IncluindoNovoCompromisso task = new();
+                //task.Start(model);
                 #endregion
 
-
+                SendResponse.Send(new() { Success = false, Message = "Informe um Argumento!", ErrorCode = ListOfErrorCodes.E161329 });
             }
         }
         catch (Exception error)

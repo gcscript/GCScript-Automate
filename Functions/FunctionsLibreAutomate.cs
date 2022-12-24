@@ -88,6 +88,39 @@ namespace GCScript_Automate.Functions
             }
         }
 
+        public static bool ClickOnElement(elm element, bool doubleClick = false, bool waitForVisible = true, int wait = -10)
+        {
+            try
+            {
+                if (element is null) { return false; }
+
+                if (waitForVisible)
+                {
+                    element.WaitFor(wait, x => x.IsInvisible == false);
+                    if (!element.IsInvisible)
+                    {
+                        try
+                        {
+                            if (doubleClick) { element.MouseClickD(); } else { element.MouseClick(); }
+                        }
+                        catch (Exception) { return false; }
+                    }
+                    else { return false; }
+                }
+                else
+                {
+                    try
+                    {
+                        if (doubleClick) { element.MouseClickD(); } else { element.MouseClick(); }
+                    }
+                    catch (Exception) { return false; }
+                }
+
+                return true;
+            }
+            catch (Exception) { return false; }
+        }
+
         public static void ClearElementContents(elm element)
         {
             try
@@ -207,9 +240,6 @@ namespace GCScript_Automate.Functions
                 SendResponse.Send(new() { Success = false, Message = error.Message, ErrorCode = ListOfErrorCodes.E157829 });
             }
         }
-
-
-
 
         public static bool ElementSetTextComboboxMode1(elm element, string elementValue)
         {
