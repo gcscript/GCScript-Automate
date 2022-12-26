@@ -50,49 +50,37 @@ public class IrParaCadastroDeAndamentoProcessual : IIrParaCadastroDeAndamentoPro
         Settings.NextStep = false;
         for (int i = 0; i < attempts; i++)
         {
-            if (i > 0) { wait.s(Settings.LA_PositiveWait10); }
-
-            // WINDOW 1
+            #region STEP1
             win = wnd.find(Settings.LA_WinNegativeWait, winName, winClass, winProcess);
             if (win.Is0) { Settings.LastError = $"A janela {winName} não foi encontrada!"; continue; }
 
-            // BUTTON INCLUIR
-            btnIncluir = win.Elm["WINDOW", prop: "class=TfrmAcompanhamento"]["BUTTON", "Incluir"].Find(Settings.LA_NegativeWait10);
+            btnIncluir = win.Elm["WINDOW", prop: "class=TfrmAcompanhamento"]["BUTTON", "Incluir"].Find(Settings.LA_NegativeWait03);
             if (btnIncluir == null)
             {
                 Settings.LastError = $"O botão Incluir não foi encontrado!";
 
-                // BUTTON ACOMPANHAMENTOS
                 btnAcompanhamentos = win.Elm["CLIENT", win.Name, navig: "la fi3 ch2 fi la fi3 ch2 fi la fi2"]["CLIENT", "Acompanhamentos"].Find(Settings.LA_NegativeWait10);
                 if (btnAcompanhamentos == null)
                 {
                     SendResponse.Send(new() { Success = false, Message = $"O botão Acompanhamentos não foi encontrado!", ErrorCode = ListOfErrorCodes.E134695 });
                 }
 
-
                 FunctionsLibreAutomate.ClickOnElement(btnAcompanhamentos);
-                //btnAcompanhamentos.WaitFor(Settings.LA_NegativeWait10, x => x.IsInvisible == false);
-                //if (!btnAcompanhamentos.IsInvisible) { try { btnAcompanhamentos.MouseClick(); } catch (Exception) { } }
 
                 continue;
             }
 
             if (!FunctionsLibreAutomate.ClickOnElement(btnIncluir)) { continue; }
+            #endregion
 
-            //btnIncluir.WaitFor(Settings.LA_NegativeWait10, x => x.IsInvisible == false);
-            //if (btnIncluir.IsInvisible) { continue; }
-            //try { btnIncluir.MouseClick(); } catch (Exception) { }
-
-            // WINDOW 2
+            #region STEP2
             win2 = wnd.find(Settings.LA_NegativeWait05, win2Name, win2Class, win2Process);
             if (win2.Is0)
             {
                 Settings.LastError = $"A janela do botão Incluir Andamento não foi encontrada!";
                 continue;
             }
-            wait.s(Settings.LA_PositiveWait03);
 
-            // BUTTON INCLUIR ANDAMENTO...
             btnIncluirAndamento = win2.Elm["MENUITEM", "Incluir Andamento..."].Find(Settings.LA_NegativeWait10);
             if (btnIncluirAndamento == null)
             {
@@ -101,10 +89,7 @@ public class IrParaCadastroDeAndamentoProcessual : IIrParaCadastroDeAndamentoPro
             }
 
             if (!FunctionsLibreAutomate.ClickOnElement(btnIncluirAndamento)) { continue; }
-
-            //btnIncluirAndamento.WaitFor(Settings.LA_NegativeWait10, x => x.IsInvisible == false);
-            //if (btnIncluirAndamento.IsInvisible) { continue; }
-            //try { btnIncluirAndamento.MouseClick(); } catch (Exception) { }
+            #endregion
 
             Settings.NextStep = true; break;
         }

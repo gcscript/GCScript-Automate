@@ -82,9 +82,9 @@ namespace GCScript_Automate
         public static string E159779 { get; } = "159779";
         public static string E161293 { get; } = "161293";
         public static string E161329 { get; } = "161329";
+        public static string E162927 { get; } = "162927";
 
         //-------------------[ SEM USO ]--------------------
-        public static string E162927 { get; } = "162927";
         public static string E163086 { get; } = "163086";
         public static string E164461 { get; } = "164461";
         public static string E165218 { get; } = "165218";

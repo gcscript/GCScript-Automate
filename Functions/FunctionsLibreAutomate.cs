@@ -1,13 +1,16 @@
 ﻿using Au;
 using Au.Types;
 using GCScript_Automate.Models;
+using Microsoft.Win32.SafeHandles;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Media;
 using static GCScript_Automate.Models.Enums;
 using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GCScript_Automate.Functions
 {
@@ -56,29 +59,29 @@ namespace GCScript_Automate.Functions
             }
         }
 
-        public static bool ElementSetValue(SetValueModel sv)
+        public static bool ElementSetValue(SetValueModel svm)
         {
             try
             {
-                sv.ElementValue = sv.ElementValue.Trim();
+                svm.ElementValue = svm.ElementValue.Trim();
 
-                if (sv.SetFocusAndSelect) { SetFocusAndSelectElement(sv.Element); }
-                if (sv.ClearContent) { ClearElementContents(sv.Element); }
-                if (sv.ClickBefore) { sv.Element.MouseClick(); }
+                if (svm.SetFocusAndSelect) { SetFocusAndSelectElement(svm.Element); }
+                if (svm.ClearContent) { ClearElementContents(svm.Element); }
+                if (svm.ClickBefore) { svm.Element.MouseClick(); }
 
-                if (sv.Mode == ESetValueMode.Clipboard) { clipboard.clear(); clipboard.paste(sv.ElementValue); }
-                else if (sv.Mode == ESetValueMode.SendKeys) { sv.Element.SendKeys($"!{sv.ElementValue}"); }
-                else if (sv.Mode == ESetValueMode.SendKeys) { keys.send($"{sv.ElementValue}"); }
+                if (svm.Mode == ESetValueMode.Clipboard) { clipboard.clear(); clipboard.paste(svm.ElementValue); }
+                else if (svm.Mode == ESetValueMode.SendKeys) { svm.Element.SendKeys($"!{svm.ElementValue}"); }
+                else if (svm.Mode == ESetValueMode.SendKeys) { keys.send($"{svm.ElementValue}"); }
                 else { return false; }
 
-                if (sv.CheckIfItWasSuccessful)
+                if (svm.CheckIfItWasSuccessful)
                 {
-                    sv.Element.WaitFor(Settings.LA_NegativeWait05, o => Tools.OnlyLettersAndNumbers(o.WndContainer.ControlText).Eq(Tools.OnlyLettersAndNumbers(sv.ElementValue)));
-                    string currentControlValue = Tools.OnlyLettersAndNumbers(sv.Element.WndContainer.ControlText);
-                    if (currentControlValue != Tools.OnlyLettersAndNumbers(sv.ElementValue)) { return false; };
+                    svm.Element.WaitFor(Settings.LA_NegativeWait05, o => Tools.OnlyLettersAndNumbers(o.WndContainer.ControlText).Eq(Tools.OnlyLettersAndNumbers(svm.ElementValue)));
+                    string currentControlValue = Tools.OnlyLettersAndNumbers(svm.Element.WndContainer.ControlText);
+                    if (currentControlValue != Tools.OnlyLettersAndNumbers(svm.ElementValue)) { return false; };
                 }
 
-                if (sv.HitEnterAfter) { sv.Element.SendKeys("Enter"); }
+                if (svm.HitEnterAfter) { svm.Element.SendKeys("Enter"); }
 
                 return true;
             }
@@ -173,7 +176,7 @@ namespace GCScript_Automate.Functions
                 if (wTemp.Is0) { continue; }
                 wTemp.Close();
                 wTemp.WaitForClosed(Settings.LA_NegativeWait30);
-                wTemp = wnd.find(Settings.LA_NegativeWait03, null, "TfrmManutTarefa");
+                wTemp = wnd.find(Settings.LA_NegativeWait01, null, "TfrmManutTarefa");
                 if (wTemp.Is0) { return false; }
             }
             return true;
@@ -191,10 +194,10 @@ namespace GCScript_Automate.Functions
 
                     if (i > 0) { wait.s(Settings.LA_PositiveWait03); }
 
-                    if (!ElementSetTextComboboxMode1(element, elementValue))
-                    {
-                        Settings.LastError = $"{elementName} inválido!"; continue;
-                    }
+                    //if (!ElementSetTextComboboxMode1(element, elementValue))
+                    //{
+                    //    Settings.LastError = $"{elementName} inválido!"; continue;
+                    //}
 
                     if (ApplicationIsStuckMode1(element)) { continue; } // VERIFICANDO SE A APLICAÇÃO ESTÁ TRAVADA
 
@@ -241,7 +244,7 @@ namespace GCScript_Automate.Functions
             }
         }
 
-        public static bool ElementSetTextComboboxMode1(elm element, string elementValue)
+        public static bool ElementSetTextComboboxMode1Backup(elm element, string elementValue)
         {
             try
             {
@@ -295,6 +298,76 @@ namespace GCScript_Automate.Functions
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        public static void ElementSetTextComboboxMode1(SetValueModel svm)
+        {
+            try
+            {
+                svm.ElementValue = svm.ElementValue.Trim();
+                //wait.s(Settings.LA_PositiveWait03);
+
+                if (Tools.OnlyLettersAndNumbers(svm.Element.WndContainer.ControlText) == Tools.OnlyLettersAndNumbers(svm.ElementValue)) { return; } // ACHOU
+
+                for (int i = 0; i < 10; i++)
+                {
+                    if (svm.CheckIfTheApplicationCrashedCtrlF2) { if (ApplicationIsStuckMode1(svm.Element)) { continue; } } // VERIFICANDO SE A APLICAÇÃO ESTÁ TRAVADA
+                    ElementSetValue(svm);
+                    CloseComboBoxPopup();
+
+                    if (svm.CheckIfTheApplicationCrashedCtrlF2) { if (ApplicationIsStuckMode1(svm.Element)) { continue; } } // VERIFICANDO SE A APLICAÇÃO ESTÁ TRAVADA
+
+                    svm.Element.WaitFor(-3, x => Tools.OnlyLettersAndNumbers(x.WndContainer.ControlText) == Tools.OnlyLettersAndNumbers(svm.ElementValue));
+
+                    if (Tools.OnlyLettersAndNumbers(svm.Element.WndContainer.ControlText) == Tools.OnlyLettersAndNumbers(svm.ElementValue))
+                    {
+                        wait.s(Settings.LA_PositiveWait01);
+
+                        if (svm.CheckIfTheApplicationCrashedCtrlF2) { if (ApplicationIsStuckMode1(svm.Element)) { continue; } } // VERIFICANDO SE A APLICAÇÃO ESTÁ TRAVADA
+
+                        if (Tools.OnlyLettersAndNumbers(svm.Element.WndContainer.ControlText) == Tools.OnlyLettersAndNumbers(svm.ElementValue)) { return; } // ACHOU
+                    }
+
+                    svm.Element.SendKeys("Up*200");
+
+                    if (Tools.OnlyLettersAndNumbers(svm.Element.WndContainer.ControlText) == Tools.OnlyLettersAndNumbers(svm.ElementValue))
+                    {
+                        wait.s(Settings.LA_PositiveWait01);
+                        if (svm.CheckIfTheApplicationCrashedCtrlF2) { if (ApplicationIsStuckMode1(svm.Element)) { continue; } } // VERIFICANDO SE A APLICAÇÃO ESTÁ TRAVADA
+                        if (Tools.OnlyLettersAndNumbers(svm.Element.WndContainer.ControlText) == Tools.OnlyLettersAndNumbers(svm.ElementValue)) { return; } // ACHOU
+                    }
+
+                    string lastValue = "[L][a][s][t][V][a][l][u][e]";
+                    while (true)
+                    {
+                        svm.Element.SendKeys("Down");
+                        wait.s(Settings.LA_PositiveWait01);
+
+                        if (Tools.OnlyLettersAndNumbers(svm.Element.WndContainer.ControlText) == Tools.OnlyLettersAndNumbers(svm.ElementValue))
+                        {
+                            wait.s(Settings.LA_PositiveWait01);
+                            if (svm.CheckIfTheApplicationCrashedCtrlF2) { if (ApplicationIsStuckMode1(svm.Element)) { continue; } } // VERIFICANDO SE A APLICAÇÃO ESTÁ TRAVADA
+                            if (Tools.OnlyLettersAndNumbers(svm.Element.WndContainer.ControlText) == Tools.OnlyLettersAndNumbers(svm.ElementValue)) { return; } // ACHOU
+                        }
+
+                        if (svm.Element.WndContainer.ControlText.Trim() == lastValue.Trim()) // CHEGOU AO FIM DO COMBOBOX
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            lastValue = svm.Element.WndContainer.ControlText;
+                            continue;
+                        }
+                    }
+                }
+
+                SendResponse.Send(new() { Success = false, Message = $"{svm.ElementName} Inválido!", ErrorCode = ListOfErrorCodes.E151744 });
+            }
+            catch (Exception error)
+            {
+                SendResponse.Send(new() { Success = false, Message = error.Message, ErrorCode = ListOfErrorCodes.E162927 });
             }
         }
 
@@ -673,10 +746,14 @@ namespace GCScript_Automate.Functions
         {
             try
             {
-                wnd cmbPopup = wnd.find(Settings.LA_NegativeWait10, "", "TcxComboBoxPopupWindow", "CProc.exe", WFlags.HiddenToo);
-                if (!cmbPopup.Is0)
+                for (int i = 0; i < 10; i++)
                 {
-                    cmbPopup.Close();
+                    wnd cmbPopup = wnd.find(-1, "", "TcxComboBoxPopupWindow", "CProc.exe", WFlags.HiddenToo);
+                    if (!cmbPopup.Is0)
+                    {
+                        cmbPopup.Close();
+                        return;
+                    }
                 }
             }
             catch (Exception)

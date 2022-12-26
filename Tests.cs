@@ -37,10 +37,6 @@ namespace GCScript_Automate
             //if (txtTipo is null) { Settings.LastError = $"O campo Tipo não foi encontrado!"; continue; }
             //FunctionsLibreAutomate.ElementSetTextByClipboard(txtTipo, "???", true, false, true, false, true);
 
-            FunctionsLibreAutomate.ElementSetTextComboboxMode1(txtTipo, mdlTipo);
-            wait.s(5);
-            FunctionsLibreAutomate.ElementSetTextComboboxMode1(txtSubtipo, mdlSubtipo);
-
         }
 
     }

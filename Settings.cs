@@ -23,6 +23,8 @@ namespace GCScript_Automate
 
         // LIBRE AUTOMATE
         public static int LA_WinNegativeWait { get; } = -10; // Seconds
+
+        public static int LA_NegativeWait01 { get; } = -1; // Seconds
         public static int LA_NegativeWait03 { get; } = -3; // Seconds
         public static int LA_NegativeWait05 { get; } = -5; // Seconds
         public static int LA_NegativeWait10 { get; } = -10; // Seconds

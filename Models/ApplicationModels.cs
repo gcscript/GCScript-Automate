@@ -1,4 +1,5 @@
 ﻿using Au;
+using static Au.Types.DNative;
 
 namespace GCScript_Automate.Models;
 
@@ -13,6 +14,7 @@ public class SetValueModel
     public bool HitEnterAfter { get; set; } = false;
     public bool ClickBefore { get; set; } = false;
     public bool CheckIfItWasSuccessful { get; set; } = false;
+    public bool CheckIfTheApplicationCrashedCtrlF2 { get; set; } = false;
 }
 
 public enum ESetValueMode

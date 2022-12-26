@@ -113,13 +113,46 @@ public class IncluindoNovoCompromisso : IIncluindoNovoCompromisso
     }
     public void SetTipo(int attempts = 0)
     {
-        FunctionsLibreAutomate.SetValueInComboBox(txtTipo, "Tipo", TipoModel);
+        //FunctionsLibreAutomate.SetValueInComboBox(txtTipo, "Tipo", TipoModel);
+
+        SetValueModel svm = new()
+        {
+            Element = txtTipo,
+            ElementName = "Tipo",
+            ElementValue = TipoModel,
+            Mode = ESetValueMode.Clipboard,
+            ClearContent = true,
+            SetFocusAndSelect = true,
+            CheckIfItWasSuccessful = true,
+            CheckIfTheApplicationCrashedCtrlF2 = true,
+            HitEnterAfter = true
+        };
+
+        FunctionsLibreAutomate.ElementSetTextComboboxMode1(svm);
+
     }
     public void SetSubtipo(int attempts = 0)
     {
         if (!string.IsNullOrEmpty(SubtipoModel))
         {
-            FunctionsLibreAutomate.SetValueInComboBox(txtSubtipo, "Subtipo", SubtipoModel);
+            //FunctionsLibreAutomate.SetValueInComboBox(txtSubtipo, "Subtipo", SubtipoModel);
+
+
+            SetValueModel svm = new()
+            {
+                Element = txtSubtipo,
+                ElementName = "Subtipo",
+                ElementValue = SubtipoModel,
+                Mode = ESetValueMode.Clipboard,
+                ClearContent = true,
+                SetFocusAndSelect = true,
+                CheckIfItWasSuccessful = true,
+                CheckIfTheApplicationCrashedCtrlF2 = true,
+                HitEnterAfter = true
+
+            };
+
+            FunctionsLibreAutomate.ElementSetTextComboboxMode1(svm);
         }
     }
     public void SetDtPublicacao(int attempts = 0)

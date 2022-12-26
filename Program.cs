@@ -1,6 +1,7 @@
 namespace GCScript_Automate;
 
 using Au;
+using Au.Types;
 using GCScript_Automate.Functions;
 using GCScript_Automate.Models;
 using System.Drawing; // esse é só pra encurtar o uso de uma classe de ícone
@@ -95,7 +96,8 @@ internal static class Program
                 }
                 else if (function == "IrParaIncluindoNovoCompromisso")
                 {
-                    WriteResponse(IrParaIncluindoNovoCompromisso.Start());
+                    IrParaIncluindoNovoCompromisso task = new();
+                    task.Start();
                     return;
                 }
                 else if (function == "IncluindoNovoCompromisso")
@@ -128,8 +130,8 @@ internal static class Program
                 #endregion
 
                 #region IrParaCadastroDeAndamentoProcessual
-                IrParaCadastroDeAndamentoProcessual task = new();
-                task.Start();
+                //IrParaCadastroDeAndamentoProcessual task = new();
+                //task.Start();
                 #endregion
 
                 #region CadastroDeAndamentoProcessual
@@ -145,19 +147,27 @@ internal static class Program
                 //task.Start(model);
                 #endregion
 
+                #region IrParaIncluindoNovoCompromisso
+                //IrParaIncluindoNovoCompromisso task = new();
+                //task.Start();
+                #endregion
+
                 #region IncluindoNovoCompromisso
                 //var model = new IncluindoNovoCompromissoModel()
                 //{
-                //    Tipo = "PRE MANDADO",
-                //    Subtipo = "EMENDA INICIAL",
-                //    DtPublicacao = "19/12/2022",
-                //    Descricao = "Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste Descrição de Teste",
+                //    Tipo = "PRAZO DACASA  - ATIVA",
+                //    //Subtipo = "AGRAVO INTERNO",
+                //    Subtipo = "EMBARGOS DE DECLARAÇÃO",
+                //    DtPublicacao = "26/12/2022",
+                //    Descricao = "TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE",
                 //    DiaInteiro = true,
                 //};
 
                 //IncluindoNovoCompromisso task = new();
                 //task.Start(model);
                 #endregion
+
+
 
                 SendResponse.Send(new() { Success = false, Message = "Informe um Argumento!", ErrorCode = ListOfErrorCodes.E161329 });
             }
